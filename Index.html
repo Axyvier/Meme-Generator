@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0b0d">
+  <title>Meme Studio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">✳</span>
+    <span><b>MEME STUDIO</b><small>YOUR IDEAS, UNFILTERED</small></span>
+  </div>
+  <div class="top-actions">
+    <button id="reset">Reset</button>
+    <button class="primary" id="export">Export ↗</button>
+  </div>
+</header>
+
+<main>
+  <section class="intro">
+    <h1>Make something<br>unreasonably funny.</h1>
+    <p>A playground for memes, reactions, and internet culture.</p>
+  </section>
+
+  <section class="workspace">
+    <div class="canvas-head">
+      <span>● ● ● &nbsp; UNTITLED.MEME</span>
+      <span id="dimensions">4:3 · 1200 × 900</span>
+    </div>
+    <div class="stage" id="stage">
+      <canvas id="canvas" width="1200" height="900"></canvas>
+      <div class="empty" id="empty">
+        <div class="spark">✳</div>
+        <b>Your next viral moment starts here.</b>
+        <p>Upload a photo, add text, and let the chaos begin.</p>
+        <span>Choose media below to start</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="quickbar">
+    <label class="button" for="file">↑ Upload media</label>
+    <input id="file" type="file" accept="image/*,.gif">
+    <button id="addText">＋ Text</button>
+    <button id="addEmoji">☺ Emoji</button>
+    <button id="delete">⌫ Delete</button>
+    <button id="undo">↶ Undo</button>
+    <button id="redo">↷ Redo</button>
+    <button id="snap" class="on">▦ Snap</button>
+  </section>
+
+  <section class="editor">
+    <div class="panel">
+      <div class="panel-title">CONTENT <span>01</span></div>
+
+      <div class="field">
+        <label for="textValue">Selected text</label>
+        <textarea id="textValue" rows="2" placeholder="Add or select text"></textarea>
+      </div>
+      <div class="field">
+        <label for="emojiValue">Emoji</label>
+        <input id="emojiValue" value="😂">
+      </div>
+      <div class="field">
+        <label for="font">Font</label>
+        <select id="font">
+          <option>Impact</option>
+          <option>Arial Black</option>
+          <option>Georgia</option>
+          <option>monospace</option>
+          <option>Comic Sans MS</option>
+        </select>
+      </div>
+      <div class="split">
+        <div class="field">
+          <label for="size">Size <output id="sizeOut">64</output></label>
+          <input id="size" type="range" min="18" max="180" value="64">
+        </div>
+        <div class="field">
+          <label for="color">Text color</label>
+          <input id="color" type="color" value="#ffffff">
+        </div>
+      </div>
+      <div class="field">
+        <label for="outline">Outline <output id="outlineOut">6</output></label>
+        <input id="outline" type="range" min="0" max="18" value="6">
+      </div>
+      <div class="split">
+        <button id="centerX">↔ Center X</button>
+        <button id="centerY">↕ Center Y</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">ARRANGE <span>02</span></div>
+      <p class="helper">Select an object, then drag it on the canvas. Arrow keys nudge it precisely.</p>
+      <div class="split">
+        <div class="field">
+          <label for="posX">Position X</label>
+          <input id="posX" type="number" min="0" max="1200" value="600">
+        </div>
+        <div class="field">
+          <label for="posY">Position Y</label>
+          <input id="posY" type="number" min="0" max="900" value="450">
+        </div>
+      </div>
+      <div class="field">
+        <label for="rotation">Rotation <output id="rotationOut">0°</output></label>
+        <input id="rotation" type="range" min="-180" max="180" value="0">
+      </div>
+      <div class="field">
+        <label for="opacity">Opacity <output id="opacityOut">100%</output></label>
+        <input id="opacity" type="range" min="10" max="100" value="100">
+      </div>
+      <div class="field">
+        <label>Layer order</label>
+        <div class="split">
+          <button id="front">Forward ↑</button>
+          <button id="back">Backward ↓</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Canvas ratio</label>
+        <div class="ratio">
+          <button data-ratio="square">1:1</button>
+          <button data-ratio="classic" class="on">4:3</button>
+          <button data-ratio="wide">16:9</button>
+          <button data-ratio="story">9:16</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">LOOK & FEEL <span>03</span></div>
+      <div class="field">
+        <label for="background">Background</label>
+        <input id="background" type="color" value="#1b1b20">
+      </div>
+      <div class="field">
+        <label for="zoom">Image zoom <output id="zoomOut">100%</output></label>
+        <input id="zoom" type="range" min="20" max="220" value="100">
+      </div>
+      <div class="field">
+        <label for="brightness">Brightness <output id="brightnessOut">100%</output></label>
+        <input id="brightness" type="range" min="40" max="160" value="100">
+      </div>
+      <div class="field">
+        <label for="saturation">Saturation <output id="saturationOut">100%</output></label>
+        <input id="saturation" type="range" min="0" max="200" value="100">
+      </div>
+      <div class="field">
+        <label>Templates</label>
+        <div class="templates">
+          <button data-template="classic">TOP / BOTTOM</button>
+          <button data-template="news">BREAKING NEWS</button>
+          <button data-template="chaos">CHAOS MODE</button>
+          <button data-template="404">404 MOOD</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Quick emoji</label>
+        <div class="emojis">
+          <button data-emoji="😂">😂</button>
+          <button data-emoji="💀">💀</button>
+          <button data-emoji="😭">😭</button>
+          <button data-emoji="🔥">🔥</button>
+          <button data-emoji="🤨">🤨</button>
+          <button data-emoji="✨">✨</button>
+        </div>
+      </div>
+      <button class="primary full" id="download">Download PNG ↓</button>
+      <p class="helper">GIF import is supported as a source image. Export creates a still PNG, not an animated GIF.</p>
+    </div>
+  </section>
+  <p class="footnote">Drag to move · Snap to center and other objects · Arrow keys to nudge · Shift + arrow for bigger steps.</p>
+</main>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+</body>
+      </html>
+      
