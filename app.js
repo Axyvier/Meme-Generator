@@ -276,42 +276,105 @@ function applySnap(o) {
   }
 }
 
-canvas.addEventListener("pointerdown", e => {
-  const p = point(e);
-  const o = hitTest(p);
-  selected = o?.id || null;
 
-  if (o) {
-    saveHistory();
-    drag = { id: o.id, dx: p.x - o.x, dy: p.y - o.y };
-    canvas.setPointerCapture(e.pointerId);
+let activePointers = new Map();
+let pinch = null;
+
+function distance(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+canvas.addEventListener("pointerdown", e => {
+  e.preventDefault();
+
+  const p = point(e);
+  activePointers.set(e.pointerId, p);
+  canvas.setPointerCapture(e.pointerId);
+
+  if (activePointers.size === 1) {
+    const o = hitTest(p);
+    selected = o?.id || null;
+    drag = o ? { id: o.id, dx: p.x - o.x, dy: p.y - o.y } : null;
+    pinch = null;
+    sync();
+    draw();
+    return;
   }
 
-  sync();
-  draw();
+  if (activePointers.size === 2) {
+    // Dua jari: resize objek yang sedang dipilih.
+    const o = active();
+    if (!o) return;
+
+    const pts = [...activePointers.values()];
+    pinch = {
+      id: o.id,
+      startDistance: Math.max(distance(pts[0], pts[1]), 1),
+      startSize: o.size
+    };
+    drag = null;
+    saveHistory();
+  }
 });
 
 canvas.addEventListener("pointermove", e => {
-  if (!drag) return;
-  const p = point(e);
-  const o = objects.find(item => item.id === drag.id);
-  if (!o) return;
+  if (!activePointers.has(e.pointerId)) return;
 
-  o.x = p.x - drag.dx;
-  o.y = p.y - drag.dy;
-  applySnap(o);
-  sync();
-  draw();
+  activePointers.set(e.pointerId, point(e));
+
+  if (activePointers.size >= 2 && pinch) {
+    const o = objects.find(item => item.id === pinch.id);
+    if (!o) return;
+
+    const pts = [...activePointers.values()];
+    const currentDistance = distance(pts[0], pts[1]);
+    const ratio = currentDistance / pinch.startDistance;
+
+    o.size = Math.max(
+      18,
+      Math.min(300, pinch.startSize * ratio)
+    );
+
+    sync();
+    draw();
+    return;
+  }
+
+  if (activePointers.size === 1 && drag) {
+    const p = activePointers.get(e.pointerId);
+    const o = objects.find(item => item.id === drag.id);
+    if (!o) return;
+
+    o.x = p.x - drag.dx;
+    o.y = p.y - drag.dy;
+
+    applySnap(o);
+    sync();
+    draw();
+  }
 });
 
-function stopDrag() {
-  if (!drag) return;
-  drag = null;
+function endPointer(e) {
+  activePointers.delete(e.pointerId);
+
+  if (activePointers.size < 2) pinch = null;
+
+  if (activePointers.size === 1) {
+    // Setelah mencubit, jangan langsung memindahkan objek
+    // akibat sisa gerakan jari.
+    drag = null;
+  } else {
+    drag = null;
+  }
+
   guides = [];
   draw();
 }
-canvas.addEventListener("pointerup", stopDrag);
-canvas.addEventListener("pointercancel", stopDrag);
+
+canvas.addEventListener("pointerup", endPointer);
+canvas.addEventListener("pointercancel", endPointer);
+canvas.addEventListener("lostpointercapture", endPointer);
+
 
 $("addText").onclick = () => addObject("text", "YOUR TEXT");
 $("addEmoji").onclick = () => addObject("emoji", $("emojiValue").value || "😂");
